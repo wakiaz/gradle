@@ -420,7 +420,7 @@ public class DefaultTransformerInvoker implements TransformerInvoker {
         private final HashCode secondaryInputHash;
 
         public ImmutableTransformationIdentity(String humanReadableIdentifier, String primaryInputAbsolutePath, HashCode primaryInputHash, HashCode secondaryInputHash) {
-            this.humanReadableIdentifier = humanReadableIdentifier;
+            this.humanReadableIdentifier = "outputDir";
             this.primaryInputAbsolutePath = primaryInputAbsolutePath;
             this.primaryInputHash = primaryInputHash;
             this.secondaryInputHash = secondaryInputHash;
