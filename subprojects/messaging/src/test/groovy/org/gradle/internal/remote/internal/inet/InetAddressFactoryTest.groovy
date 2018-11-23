@@ -68,9 +68,18 @@ class InetAddressFactoryTest extends Specification {
         !factory.isCommunicationAddress(ip(127, 0, 0, 3))
     }
 
-    def "0.0.0.0 is used as bind address by default"() {
+    def "loopback is used as bind address if available"() {
         when:
         defaultAddresses()
+
+        then:
+        factory.localBindingAddress == ip(127, 0, 0, 1)
+    }
+
+    def "0.0.0.0 is used as bind address if no loopback available"() {
+        when:
+        loopbackAddresses([])
+        remoteAddresses([ip(192, 168, 18, 256)])
 
         then:
         factory.localBindingAddress == new InetSocketAddress(0).address

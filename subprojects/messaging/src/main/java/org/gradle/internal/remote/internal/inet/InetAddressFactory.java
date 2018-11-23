@@ -99,11 +99,24 @@ public class InetAddressFactory {
         if (inetAddresses == null) { // For testing
             inetAddresses = new InetAddresses();
         }
-        localBindingAddress = new InetSocketAddress(0).getAddress();
+
+        findLocalBindingAddress();
 
         findCommunicationAddresses();
 
         handleOpenshift();
+    }
+
+    /**
+     * Prefer first loopback address if available, otherwise use the wildcard address.
+     */
+    private void findLocalBindingAddress() {
+        if (inetAddresses.getLoopback().isEmpty()) {
+            localBindingAddress = new InetSocketAddress(0).getAddress();
+            logger.debug("No loopback address for local binding, using fallback {}", localBindingAddress);
+        } else {
+            localBindingAddress = inetAddresses.getLoopback().get(0);
+        }
     }
 
     private void handleOpenshift() {
@@ -135,10 +148,10 @@ public class InetAddressFactory {
         if (inetAddresses.getLoopback().isEmpty()) {
             if (inetAddresses.getRemote().isEmpty()) {
                 InetAddress fallback = InetAddress.getByName(null);
-                logger.debug("No loopback addresses, using fallback {}", fallback);
+                logger.debug("No loopback addresses for communication, using fallback {}", fallback);
                 communicationAddresses.add(fallback);
             } else {
-                logger.debug("No loopback addresses, using remote addresses instead.");
+                logger.debug("No loopback addresses for communication, using remote addresses instead.");
                 communicationAddresses.addAll(inetAddresses.getRemote());
             }
         } else {
